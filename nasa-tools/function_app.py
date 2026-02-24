@@ -55,3 +55,32 @@ def nasa_asteroids_monitor(req: func.HttpRequest) -> func.HttpResponse:
             json.dumps({"error": f"Falha ao processar dados da NASA: {str(e)}"}),
             status_code=500
         )
+    
+@app.route(route="nasa_apod_gallery")
+def nasa_apod_gallery(req: func.HttpRequest) -> func.HttpResponse:
+    data_query = req.params.get('date')
+    
+    url = f"https://api.nasa.gov/planetary/apod?api_key={NASA_KEY}"
+    if data_query:
+        url += f"&date={data_query}"
+
+    try:
+        response = requests.get(url, timeout=10)
+        data = response.json()
+
+        payload = {
+            "titulo": data.get("title"),
+            "data": data.get("date"),
+            "explicacao": data.get("explanation"),
+            "url_imagem": data.get("url"),
+            "tipo_midia": data.get("media_type"),
+            "copyright": data.get("copyright", "Domínio Público")
+        }
+
+        return func.HttpResponse(
+            json.dumps(payload, ensure_ascii=False),
+            mimetype="application/json",
+            status_code=200
+        )
+    except Exception as e:
+        return func.HttpResponse(json.dumps({"error": str(e)}), status_code=500)
