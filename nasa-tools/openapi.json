@@ -1,0 +1,102 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "NASA Asteroid Radar",
+    "description": "API para monitoramento de objetos espaciais (NEOs) que se aproximam da Terra, utilizando dados oficiais da NASA.",
+    "version": "1.1.0"
+  },
+  "servers": [
+    {
+      "url": "{{FUNCTION_URL}}",
+      "description": "Servidor de Produção no Azure (Central US)"
+    }
+  ],
+  "paths": {
+    "/nasa_asteroids_monitor": {
+      "get": {
+        "operationId": "get_near_earth_asteroids",
+        "summary": "Consulta asteroides próximos à Terra",
+        "description": "Retorna uma lista de asteroides detectados pela NASA para uma data específica. Inclui informações sobre tamanho, velocidade, distância da Terra e se o objeto é potencialmente perigoso.",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "description": "A data para consulta no formato YYYY-MM-DD. Caso não seja fornecida, a API assumirá a data atual do servidor.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-02-18"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso ao recuperar dados da NASA",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data_pesquisada": {
+                      "type": "string"
+                    },
+                    "total_asteroides_detectados": {
+                      "type": "integer"
+                    },
+                    "asteroides": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "nome": {
+                            "type": "string"
+                          },
+                          "perigoso": {
+                            "type": "boolean"
+                          },
+                          "tamanho_estimado_metros": {
+                            "type": "object",
+                            "properties": {
+                              "min": {
+                                "type": "number"
+                              },
+                              "max": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "velocidade_km_h": {
+                            "type": "number"
+                          },
+                          "distancia_da_terra_km": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno ao processar dados da API da NASA",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

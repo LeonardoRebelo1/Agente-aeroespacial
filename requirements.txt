@@ -1,0 +1,5 @@
+azure-identity
+azure-ai-projects
+python-dotenv
+azure-functions
+requests
