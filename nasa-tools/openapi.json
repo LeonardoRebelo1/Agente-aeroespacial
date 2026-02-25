@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://function-aeroespacial-h8h5bnfxbkczekds.brazilsouth-01.azurewebsites.net/api",
+      "url": "",
       "description": "Servidor de Produção no Azure"
     }
   ],
@@ -191,6 +191,50 @@
                           }
                         }
                       }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/nasa_people_in_space": {
+      "get": {
+        "operationId": "get_astronauts_info",
+        "summary": "Rastreador de Humanos no Espaço",
+        "description": "Retorna o número de astronautas no espaço agora, seus nomes, em qual nave estão e a localização em tempo real da ISS.",
+        "responses": {
+          "200": {
+            "description": "Sucesso ao recuperar informações espaciais",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total_humanos_no_espaco": {
+                      "type": "integer"
+                    },
+                    "astronautas": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" },
+                          "craft": { "type": "string" }
+                        }
+                      }
+                    },
+                    "iss_posicao_atual": {
+                      "type": "object",
+                      "properties": {
+                        "latitude": { "type": "string" },
+                        "longitude": { "type": "string" }
+                      }
+                    },
+                    "mensagem": {
+                      "type": "string"
                     }
                   }
                 }

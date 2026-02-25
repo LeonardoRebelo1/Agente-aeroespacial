@@ -133,3 +133,32 @@ def nasa_earth_events(req: func.HttpRequest) -> func.HttpResponse:
 
     except Exception as e:
         return func.HttpResponse(json.dumps({"error": str(e)}), status_code=500)
+    
+@app.route(route="nasa_people_in_space")
+def nasa_people_in_space(req: func.HttpRequest) -> func.HttpResponse:
+    try:
+        res_astros = requests.get("http://api.open-notify.org/astros.json", timeout=10)
+        data_astros = res_astros.json()
+
+        res_iss = requests.get("http://api.open-notify.org/iss-now.json", timeout=10)
+        data_iss = res_iss.json()
+
+        astros = data_astros.get('people', [])
+        
+        payload = {
+            "total_humanos_no_espaco": data_astros.get('number'),
+            "astronautas": astros,
+            "iss_posicao_atual": {
+                "latitude": data_iss.get('iss_position', {}).get('latitude'),
+                "longitude": data_iss.get('iss_position', {}).get('longitude')
+            },
+            "mensagem": "Dados em tempo real sobre a presença humana no espaço."
+        }
+
+        return func.HttpResponse(
+            json.dumps(payload, ensure_ascii=False),
+            mimetype="application/json",
+            status_code=200
+        )
+    except Exception as e:
+        return func.HttpResponse(json.dumps({"error": "Não foi possível rastrear os astronautas agora."}), status_code=200)
