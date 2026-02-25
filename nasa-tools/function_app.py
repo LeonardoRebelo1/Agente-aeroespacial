@@ -2,6 +2,7 @@ import azure.functions as func
 import json
 import requests
 from datetime import datetime
+import random
 import os
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -82,5 +83,53 @@ def nasa_apod_gallery(req: func.HttpRequest) -> func.HttpResponse:
             mimetype="application/json",
             status_code=200
         )
+    except Exception as e:
+        return func.HttpResponse(json.dumps({"error": str(e)}), status_code=500)
+    
+@app.route(route="nasa_earth_events")
+def nasa_earth_events(req: func.HttpRequest) -> func.HttpResponse:
+    days_query = req.params.get('days')
+    
+    url = "https://eonet.gsfc.nasa.gov/api/v3/events"
+    
+    params = {}
+    if days_query:
+        params['days'] = days_query
+        params['status'] = 'all'
+    else:
+        params['status'] = 'open'
+
+    try:
+        response = requests.get(url, params=params, timeout=15)
+        
+        if response.status_code != 200:
+            return func.HttpResponse(json.dumps({"error": "Erro na EONET"}), status_code=response.status_code)
+
+        data = response.json()
+        events = data.get('events', [])
+
+        if not events:
+            return func.HttpResponse(
+                json.dumps({"message": "Nenhum evento detectado no período informado."}),
+                status_code=200
+            )
+
+        lista_eventos = []
+        for ev in events[:10]:
+            last_geom = ev.get('geometry', [{}])[-1]
+            lista_eventos.append({
+                "titulo": ev.get('title'),
+                "categoria": ev.get('categories', [{}])[0].get('title'),
+                "data_inicio": ev.get('geometry', [{}])[0].get('date'),
+                "data_atualizacao": last_geom.get('date'),
+                "coordenadas": last_geom.get('coordinates'),
+                "status": "Ativo" if not ev.get('closed') else "Encerrado"
+            })
+
+        return func.HttpResponse(
+            json.dumps({"periodo_dias": days_query or "atual", "eventos": lista_eventos}, ensure_ascii=False),
+            mimetype="application/json", status_code=200
+        )
+
     except Exception as e:
         return func.HttpResponse(json.dumps({"error": str(e)}), status_code=500)

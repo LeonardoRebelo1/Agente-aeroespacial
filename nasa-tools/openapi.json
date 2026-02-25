@@ -1,14 +1,14 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "NASA Asteroid Radar",
-    "description": "API para monitoramento de objetos espaciais (NEOs) que se aproximam da Terra, utilizando dados oficiais da NASA.",
-    "version": "1.1.0"
+    "title": "NASA Aeroespacial Hub",
+    "description": "API completa para monitoramento de asteroides e visualização da imagem astronômica do dia (APOD).",
+    "version": "1.2.0"
   },
   "servers": [
     {
-      "url": "{{FUNCTION_URL}}",
-      "description": "Servidor de Produção no Azure (Central US)"
+      "url": "https://function-aeroespacial-h8h5bnfxbkczekds.brazilsouth-01.azurewebsites.net/api",
+      "description": "Servidor de Produção no Azure"
     }
   ],
   "paths": {
@@ -16,17 +16,17 @@
       "get": {
         "operationId": "get_near_earth_asteroids",
         "summary": "Consulta asteroides próximos à Terra",
-        "description": "Retorna uma lista de asteroides detectados pela NASA para uma data específica. Inclui informações sobre tamanho, velocidade, distância da Terra e se o objeto é potencialmente perigoso.",
+        "description": "Retorna uma lista de asteroides detectados pela NASA para uma data específica (YYYY-MM-DD).",
         "parameters": [
           {
             "name": "date",
             "in": "query",
             "required": false,
-            "description": "A data para consulta no formato YYYY-MM-DD. Caso não seja fornecida, a API assumirá a data atual do servidor.",
+            "description": "Data no formato YYYY-MM-DD para consulta. Se omitido, usa a data atual.",
             "schema": {
               "type": "string",
               "format": "date",
-              "example": "2026-02-18"
+              "example": "2024-05-20"
             }
           }
         ],
@@ -79,16 +79,118 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Erro interno ao processar dados da API da NASA",
+          }
+        }
+      }
+    },
+    "/nasa_apod_gallery": {
+      "get": {
+        "operationId": "get_astronomy_picture",
+        "summary": "Busca a imagem astronômica do dia",
+        "description": "Retorna a imagem ou vídeo do dia da NASA com título e explicação detalhada.",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "description": "Data para consulta (YYYY-MM-DD). Se omitido, usa a data atual.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2023-12-25"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso ao recuperar a imagem",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
+                    "titulo": {
                       "type": "string"
+                    },
+                    "data": {
+                      "type": "string"
+                    },
+                    "explicacao": {
+                      "type": "string"
+                    },
+                    "url_imagem": {
+                      "type": "string"
+                    },
+                    "tipo_midia": {
+                      "type": "string"
+                    },
+                    "copyright": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/nasa_earth_events": {
+      "get": {
+        "operationId": "get_natural_events",
+        "summary": "Monitor de Eventos Naturais Terrestres",
+        "description": "Retorna uma lista de eventos naturais ativos na Terra, como incêndios, vulcões e tempestades.",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "description": "Número de dias retroativos para buscar eventos (ex: 7 para última semana, 30 para o último mês).",
+            "schema": {
+              "type": "integer",
+              "example": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso ao recuperar eventos naturais",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "periodo_dias": {
+                      "type": "string"
+                    },
+                    "eventos": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "titulo": {
+                            "type": "string"
+                          },
+                          "categoria": {
+                            "type": "string"
+                          },
+                          "data_inicio": {
+                            "type": "string"
+                          },
+                          "data_atualizacao": {
+                            "type": "string"
+                          },
+                          "coordenadas": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            }
+                          },
+                          "status": {
+                            "type": "string"
+                          }
+                        }
+                      }
                     }
                   }
                 }
