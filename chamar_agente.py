@@ -90,11 +90,11 @@ async def chat(request: ChatRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.delete("/api/chat/{user_id}")
-async def reset_chat(user_id: str):
+@app.delete("/api/chat/{thread_id}")
+async def reset_chat(thread_id: str):
     try:
-        container.delete_item(item=user_id, partition_key=user_id)
-        return {"message": f"Histórico do usuário {user_id} limpo com sucesso."}
+        container.delete_item(item=thread_id, partition_key=thread_id)
+        return {"message": f"Conversa {thread_id} limpa com sucesso."}
     except exceptions.CosmosResourceNotFoundError:
         return {"message": "Nenhum histórico encontrado para este usuário."}
     except Exception as e:

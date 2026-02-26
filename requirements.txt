@@ -1,5 +1,7 @@
-azure-identity
-azure-ai-projects
+fastapi
+uvicorn
 python-dotenv
-azure-functions
+azure-ai-projects
+azure-identity
+azure-cosmos
 requests
