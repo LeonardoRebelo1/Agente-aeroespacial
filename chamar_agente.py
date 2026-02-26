@@ -99,6 +99,10 @@ async def reset_chat(thread_id: str):
         return {"message": "Nenhum histórico encontrado para este usuário."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/")
+async def root():
+    return {"status": "Caos Online", "version": "1.0"}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
