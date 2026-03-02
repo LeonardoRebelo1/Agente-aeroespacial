@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.env
+.vscode/
+.git/
+*.log
+nasa-tools/
+prompts/
+.gitignore
+criar_agente.py
+README.md
