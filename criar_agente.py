@@ -17,10 +17,6 @@ project_client = AIProjectClient(
 
 agent = project_client.agents.get(agent_name)
 
-existing_tools = agent.definition.tools if agent.definition.tools else []
-
-print(f"🔧 Tools encontradas: {len(existing_tools)}")
-
 with open("prompts/system.md", "r", encoding="utf-8") as f:
     instructions_text = f.read()
 
@@ -29,6 +25,5 @@ new_version = project_client.agents.create_version(
     definition=PromptAgentDefinition(
         model=model_name,
         instructions=instructions_text,
-        tools=existing_tools,  # 🔥 preserva as tools
     ),
 )
